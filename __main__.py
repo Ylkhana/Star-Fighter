@@ -6,6 +6,8 @@ class Ship(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/ship.png').convert_alpha()
         self.rect = self.image.get_rect(center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
+        self.mask = pygame.mask.from_surface(self.image)
+
         self.can_shoot = True
         self.shoot_time = None
 
@@ -27,7 +29,7 @@ class Ship(pygame.sprite.Sprite):
                 self.can_shoot = True
 
     def meteor_collision(self):
-        if pygame.sprite.spritecollide(self, meteor_group, True):
+        if pygame.sprite.spritecollide(self, meteor_group, True, pygame.sprite.collide_mask):
             pygame.quit()
             sys.exit()
         
@@ -42,13 +44,14 @@ class Laser(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/laser.png').convert_alpha()
         self.rect = self.image.get_rect(midbottom = position)
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.position = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2(0,-1)
         self.speed = 600
 
     def meteor_destruction(self):
-        if pygame.sprite.spritecollide(self, meteor_group, True):
+        if pygame.sprite.spritecollide(self, meteor_group, True, pygame.sprite.collide_mask):
             self.kill()
 
     def update(self):
@@ -69,6 +72,7 @@ class Meteor(pygame.sprite.Sprite):
         self.scaled_surface = pygame.transform.scale(meteor_surface,meteor_size)
         self.image = self.scaled_surface
         self.rect = self.image.get_rect(center = position)
+        self.mask = pygame.mask.from_surface(self.image)
 
         # Positioning
         self.position = pygame.math.Vector2(self.rect.topleft)
@@ -84,6 +88,7 @@ class Meteor(pygame.sprite.Sprite):
         rotated_meteor = pygame.transform.rotozoom(self.scaled_surface, self.rotation, 1)
         self.image = rotated_meteor
         self.rect = self.image.get_rect(center = self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         self.position += self.direction * self.speed * dt
