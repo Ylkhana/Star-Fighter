@@ -11,6 +11,8 @@ class Ship(pygame.sprite.Sprite):
         self.can_shoot = True
         self.shoot_time = None
 
+        self.laser_sound = pygame.mixer.Sound('sounds/laser.ogg')
+
     def input_position(self):
         pos = pygame.mouse.get_pos()
         self.rect.center = pos
@@ -21,6 +23,7 @@ class Ship(pygame.sprite.Sprite):
             self.shoot_time = pygame.time.get_ticks()
 
             Laser(self.rect.midtop, laser_group)
+            self.laser_sound.play()
 
     def shoot_timer(self):
         if not self.can_shoot:
@@ -50,6 +53,8 @@ class Laser(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,-1)
         self.speed = 600
 
+        self.explosion_sound = pygame.mixer.Sound('sounds/explosion.wav')
+
     def meteor_destruction(self):
         if pygame.sprite.spritecollide(self, meteor_group, True, pygame.sprite.collide_mask):
             self.kill()
@@ -61,6 +66,7 @@ class Laser(pygame.sprite.Sprite):
 
         if self.rect.bottom < 0:
             self.kill()
+            self.explosion_sound.play()
 
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, position, groups):
@@ -139,6 +145,10 @@ pygame.time.set_timer(meteor_timer,500)
 
 # Score
 score = Score()
+
+# Background music
+bg_music = pygame.mixer.Sound('sounds/music.wav')
+bg_music.play(loops = -1)
 
 # Game loop
 while True:
